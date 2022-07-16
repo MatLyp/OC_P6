@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const path = require('path');
+
 const userRoutes = require('./routes/user');
 const saucesRoutes = require('./routes/sauces');
 
@@ -21,11 +23,8 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// app.use((req, res) => {
-//    res.json({ message: 'Votre requête a bien été reçue !' }); 
-// });
-
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', saucesRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
