@@ -8,11 +8,9 @@ const saucesRoutes = require('./routes/sauces');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://matlyp:tempdevpass@cluster0.l4vya3y.mongodb.net/?retryWrites=true&w=majority', 
-{ useNewUrlParser: true,
-  useUnifiedTopology: true })
-   .then( () => console.log('Connexion à MongoDB réussie !'))
-   .catch( () => console.log('Connexion à MongoDB échouée !'));
+mongoose.connect('mongodb+srv://matlyp:tempdevpass@cluster0.l4vya3y.mongodb.net/?retryWrites=true&w=majority')
+   .then(() => console.log('Connexion à MongoDB réussie !'))
+   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use((req, res, next) => {
    res.setHeader('Access-Control-Allow-Origin', '*');

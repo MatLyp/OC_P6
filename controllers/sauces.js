@@ -20,11 +20,7 @@ exports.createSauce = (req, res, next) => {
     const sauce = new Sauce({
         ...sauceObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-        likes: 0,
-        dislikes: 0,
-        // usersLiked: [],
-        // usersDisliked: []
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     sauce.save()
         .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
@@ -39,7 +35,7 @@ exports.modifySauce = (req, res, next) => {
 
     delete sauceObject._userId;
     Sauce.findOne({ _id: req.params.id })
-        .then((sauce) => {
+        .then(sauce => {
             if (sauce.userId != req.auth.userId) {
                 res.status(400).json({ message: 'Non-autorisé' });
             } else {
@@ -65,7 +61,49 @@ exports.deleteSauce = (req, res, next) => {
                 });
             }
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(error => res.status(400).json({ error }));
 }
 
+exports.likeSauce = (req, res, next) => {
+    Sauce.findOne({ _id: req.params.id })
+        .then(sauce => {
+            switch(req.body.like){
+                case -1:
+                    if(!sauce.usersDisliked.includes(req.body.userId) && !sauce.usersLiked.includes(req.body.userId)){
+                        sauce.usersDisliked.push(req.body.userId);
+                        sauce.dislikes ++;
+                    } else { res.status(400).json({ error }); }
+                    break;
 
+                case 1:
+                    if(!sauce.usersLiked.includes(req.body.userId) && !sauce.usersDisliked.includes(req.body.userId)){
+                        sauce.usersLiked.push(req.body.userId);
+                        sauce.likes ++;
+                    } else { res.status(400).json({ error }); }
+                    break;
+                    
+                case 0:
+                    if(sauce.usersDisliked.includes(req.body.userId)){
+                        // const iUserId = usersDisliked.findIndex(req.body.userId);
+                        // console.log(iUserId);
+                        sauce.usersDisliked = sauce.usersDisliked.filter(userId => userId != req.body.userId);
+                        sauce.dislikes --;  
+                    } else if(sauce.usersLiked.includes(req.body.userId)){
+                        // const iUserId = { $indexOfArray: ["$usersLiked", req.body.userId] };
+                        // console.log(iUserId);
+                        sauce.usersLiked = sauce.usersLiked.filter(userId => userId != req.body.userId);
+                        sauce.likes --;
+                    } else { res.status(400).json({ error }); }
+                    break;
+            }
+            sauce.save()
+                    .then(() => res.status(201).json({ message: 'Actualisation des likes !' }))
+                    .catch(error => res.status(400).json({ error }));
+                    console.log(' "v" like array "v"');
+                    console.log(sauce.usersLiked);
+                    console.log(' "v" dislike array "v"');
+                    console.log(sauce.usersDisliked);
+        })
+
+        .catch(error => res.status(400).json({ error }));
+};
