@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require("dotenv").config();
 
 const path = require('path');
 
@@ -8,7 +9,7 @@ const saucesRoutes = require('./routes/sauces');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://matlyp:tempdevpass@cluster0.l4vya3y.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_ACC}:${process.env.MONGODB_PASS}@cluster0.l4vya3y.mongodb.net/?retryWrites=true&w=majority`)
    .then(() => console.log('Connexion à MongoDB réussie !'))
    .catch(() => console.log('Connexion à MongoDB échouée !'));
 

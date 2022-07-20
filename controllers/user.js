@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const User = require('../models/user');
 
@@ -28,7 +29,7 @@ exports.login = (req, res, next) => {
             // if the email exist in our db, we use the compare method from bcrypt to know if the (hash)password associated to that user is correct
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
-                    // if not, return the same error than previously (for security we cant let the user know if the email entered is correct or not)
+                    // if not, return the same error than previously (for security we can't let the user know if the email entered is correct or not)
                     if (!valid) {
                         return res.status(401).json({ message: 'Association email/mot de passe incorrecte !' });
                     }
@@ -37,7 +38,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            process.env.TOKEN_SECRET_KEY,
                             { expiresIn: '24h' }
                         )
                     });

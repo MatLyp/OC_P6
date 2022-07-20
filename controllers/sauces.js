@@ -67,6 +67,9 @@ exports.deleteSauce = (req, res, next) => {
 exports.likeSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
+            if (req.body.userId != req.auth.userId) {   // Necessaire ???
+                res.status(401).json({ message: 'Non-autorisé' });
+            }
             switch(req.body.like){
                 case -1:
                     if(!sauce.usersDisliked.includes(req.body.userId) && !sauce.usersLiked.includes(req.body.userId)){
@@ -86,6 +89,7 @@ exports.likeSauce = (req, res, next) => {
                     if(sauce.usersDisliked.includes(req.body.userId)){
                         // const iUserId = usersDisliked.findIndex(req.body.userId);
                         // console.log(iUserId);
+                        //                                       .splice ne fonctionne pas ?
                         sauce.usersDisliked = sauce.usersDisliked.filter(userId => userId != req.body.userId);
                         sauce.dislikes --;  
                     } else if(sauce.usersLiked.includes(req.body.userId)){
@@ -99,11 +103,11 @@ exports.likeSauce = (req, res, next) => {
             sauce.save()
                     .then(() => res.status(201).json({ message: 'Actualisation des likes !' }))
                     .catch(error => res.status(400).json({ error }));
-                    console.log(' "v" like array "v"');
-                    console.log(sauce.usersLiked);
-                    console.log(' "v" dislike array "v"');
-                    console.log(sauce.usersDisliked);
+                    // console.log(' ------------------------- ');
+                    // console.log(' "v" like array "v"');
+                    // console.log(sauce.usersLiked);
+                    // console.log(' "v" dislike array "v"');
+                    // console.log(sauce.usersDisliked);
         })
-
         .catch(error => res.status(400).json({ error }));
 };
