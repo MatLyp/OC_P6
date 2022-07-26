@@ -1,8 +1,14 @@
+//Routes User
+
 const express = require('express');
-const router = express.Router();
+
+const emailValidator = require('../middleware/email-validator');
+const passwordValidator = require('../middleware/password-validator');
 const userController = require('../controllers/user');
 
-router.post('/signUp', userController.signUp);
+const router = express.Router();
+
+router.post('/signUp', emailValidator, passwordValidator, userController.signUp);
 router.post('/login', userController.login);
 
 module.exports = router;

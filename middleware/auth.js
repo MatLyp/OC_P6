@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+//middleware de vérification du jwt lors d'une requète utilisateur au serveur
 module.exports = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
